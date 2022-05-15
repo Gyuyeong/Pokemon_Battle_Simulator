@@ -5,6 +5,7 @@
 """
 from Pokemon_nature import PokemonNature
 from Pokemon_nature import determine_nature_bonus
+from Pokemon_status_conditions import PokemonStatusConditions
 
 
 class Pokemon:
@@ -110,6 +111,8 @@ class Pokemon:
         self._sp_attack = self.CalculateStats(3)
         self._sp_defense = self.CalculateStats(4)
         self._speed = self.CalculateStats(5)
+        # 현재 가지고 있는 체력
+        self._current_hp = self._hp
         # 기술
         self._move1 = _move1
         self._move2 = _move2
@@ -288,6 +291,10 @@ class Pokemon:
     @property
     def speed(self):
         return self._speed
+
+    @property
+    def current_hp(self):
+        return self._current_hp
 
     @property
     def move1(self):
@@ -589,6 +596,23 @@ class Pokemon:
     def speed(self, speed):
         self._speed = speed
 
+    @current_hp.setter
+    def current_hp(self, hp_change):
+        # hp 변동은 항상 정수이다. 소수점은 버린다.
+        hp_change = int(hp_change)
+        if hp_change > 0:
+            if self.current_hp + hp_change >= self.hp:
+                self.current_hp = self.hp
+            else:
+                self.current_hp += hp_change
+        elif hp_change < 0:
+            # 체력이 0이 되면 기절함
+            if self.current_hp + hp_change <= 0:
+                self.current_hp = 0
+                self.status_conditions = PokemonStatusConditions.FAINTED
+            else:
+                self.current_hp += hp_change
+
     # 기술 추가시 중복을 확인해야 함. 추후 구현
     @move1.setter
     def move1(self, move):
@@ -609,6 +633,10 @@ class Pokemon:
     @is_dynamax.setter
     def is_dynamax(self, is_dynamax=False):
         self._is_dynamax = is_dynamax
+
+    @status_conditions.setter
+    def status_conditions(self, status_condition):
+        self._status_conditions = status_condition
             
     # 일반 전설과 초전설도 구분해야 함. 추후 구현
     @is_legendary.setter
@@ -681,6 +709,10 @@ class Pokemon:
             else:
                 speed_stat = int((self._base_speed + (self._iv_speed/2) + (self._ev_speed/8) + 5))
             return speed_stat
+
+    @status_conditions.setter
+    def status_conditions(self, value):
+        self._status_conditions = value
 
 
 if __name__ == "__main__":

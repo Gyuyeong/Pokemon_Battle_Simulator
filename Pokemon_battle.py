@@ -5,7 +5,36 @@
 짓궂은마음과 같이 우선도를 높여주는 특성을 가지고 있으면 먼저 행동할 수 있게 됩니다. 배틀 도중에
 날씨나 필드가 생겨서 배틀중인 포켓몬이 영향을 받을 수 있습니다.
 """
-from Player import Player, check_entry
+from Player import Player
+from Pokemon import Pokemon
+from Pokemon_nature import PokemonNature
+from Pokemon_type import PokemonType
+
+
+# 엔트리가 기준에 부합하는지 확인하는 함수
+def check_entry(entry):
+    name_list = []
+    item_list = []
+    for pokemon in entry:
+        if pokemon is None:
+            pass
+        # 중복이 없는 경우
+        elif pokemon.name not in name_list:
+            name_list.append(pokemon.name)
+        else:
+            print("{}가 2마리 이상 엔트리에 포함되어 있습니다. 배틀에 참가하실 수 없습니다.".format(pokemon.name))
+            return -1
+    # 지닌물건 class 추후에 구현예정
+    for pokemon in entry:
+        if pokemon.held_item is None:
+            pass
+        elif pokemon.held_item not in item_list:
+            item_list.append(pokemon.held_item)
+        else:
+            print("{}를 2마리 이상의 포켓몬이 지니고 있습니다. 배틀에 참가하실 수 없습니다.".format(pokemon.held_item))
+            return -1
+
+    return entry
 
 
 # 배틀을 하기 전 체크해야 할 사항들을 체크합니다.
@@ -128,8 +157,8 @@ class PokemonBattle:
         # 각 플레이어의 엔트리를 점검합니다.
         prepare_for_single_battle(self.player1, self.player2)
         # 각 플레이어는 대전에 참여할 포켓몬 3마리를 고릅니다.
-        choose_pokemon_for_single_battle(self.player1)
-        choose_pokemon_for_single_battle(self.player2)
+        choose_pokemon_for_single_battle(self.player1, [1, 2, 3])
+        choose_pokemon_for_single_battle(self.player2, [0, 5, 2])
 
         # 각 플레이어는 첫번째 순서의 포켓몬을 꺼냅니다.
         self.player1_pokemon = self.player1.single_battle_entry[0]
@@ -137,6 +166,63 @@ class PokemonBattle:
 
 
 if __name__ == "__main__":
-    lst = [0, 1, 2, 3, 4, 5, 6]
+    pokemon1 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.BASHFUL,
+                       "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
 
-    print(lst[0])
+    pokemon2 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.BOLD, "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon3 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.TIMID, "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon4 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.LAX, "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon5 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.LONELY, "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon6 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.ADAMANT,
+                       "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon7 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.SASSY, "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon8 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.HASTY, "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon9 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.RASH, "Monster",
+                       0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                       "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon10 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.MODEST,
+                        "Monster",
+                        0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                        "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon11 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.CALM, "Monster",
+                        0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                        "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    pokemon12 = Pokemon("Squirtle", 7, 50, PokemonType.WATER, "None", "Torrent", "Male", PokemonNature.NAUGHTY,
+                        "Monster",
+                        0.5, 1.08, 50, "None", 44, 48, 65, 50, 64, 43, 31, 31, 31, 31, 31, 31, 252, 0, 252, 0, 4, 0,
+                        "None", "None", "None", "None", True, 0, 0, 0, 0, 0, 0, 0, 0, False, "None", False)
+
+    player1 = Player(pokemon1, pokemon2, pokemon3, pokemon4, pokemon5, pokemon6)
+    player2 = Player(pokemon7, pokemon8, pokemon9, pokemon10, pokemon11, pokemon12)
+
+    battle = PokemonBattle(player1, player2)
+
+    battle.SingleBattle()
+
+

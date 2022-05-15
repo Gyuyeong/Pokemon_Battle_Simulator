@@ -8,6 +8,8 @@ from enum import Enum, unique
 
 @unique
 class PokemonStatusConditions(Enum):
+    # 기절
+    FAINTED = 0
     # 지속성 상태변화
     POISON = 1  # 독
     TOXIC = 2  # 맹독

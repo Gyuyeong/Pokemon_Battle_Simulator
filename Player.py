@@ -9,33 +9,15 @@ from Pokemon import Pokemon
 
 # 고의적으로 중간에 None 이 오게끔 파티를 짜는 것을 막고 항상 None 은 리스트 끝에 있도록 하는 함수
 def sort_entry(entry):
-    entry.sort(key=lambda e: (e is None, e))
-    return entry
-
-# 엔트리가 기준에 부합하는지 확인하는 함수
-def check_entry(entry):
-    name_list = []
-    item_list = []
-    for pokemon in entry:
-        if pokemon is None:
-            pass
-        # 중복이 없는 경우
-        elif pokemon.name not in name_list:
-            name_list.append(pokemon.name)
-        else:
-            print("{}가 2마리 이상 엔트리에 포함되어 있습니다. 배틀에 참가하실 수 없습니다.".format(pokemon.name))
-            return -1
-    # 지닌물건 class 추후에 구현예정
-    for pokemon in entry:
-        if pokemon.held_item is None:
-            pass
-        elif pokemon.held_item not in item_list:
-            item_list.append(pokemon.held_item)
-        else:
-            print("{}를 2마리 이상의 포켓몬이 지니고 있습니다. 배틀에 참가하실 수 없습니다.".format(pokemon.held_item))
-            return -1
-
-    return entry
+    sorted_entry = []
+    for index in range(len(entry)):
+        if entry[index] is not None:
+            sorted_entry.append(entry[index])
+    if len(sorted_entry) < 6:
+        length = len(sorted_entry)
+        for i in range(6 - length):
+            sorted_entry.append(None)
+    return sorted_entry
 
 
 class Player:

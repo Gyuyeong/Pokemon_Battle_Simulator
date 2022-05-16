@@ -30,25 +30,41 @@ pokemon_dict = {
     }
 }
 
+def search_pokemon(name):
+    """
+    데이터베이스에 저장되어 있는 포켓몬을 찾는 함수입니다. 현재 8세대까지 나와있는 포켓몬이
+    1,000종이 넘기 때문에 아무래도 눈으로 직접 찾는 것은 어렵기에 이 함수를 만들었습니다.
+    :param name: 찾고자하는 포켓몬의 이름.
+    :return: Pokemon 클래스에 넣어서 반환합니다.
+    """
+    pokemon_data = pokemon_dict[name]
+    english_name = pokemon_data["English"]
+    korean_name = pokemon_data["Korean"]
+
+    if (name == english_name) | (name == korean_name):
+        pokemon = Pokemon(pokemon_data["English"], pokemon_data["pokedex"], 50,
+                          pokemon_data["type1"], pokemon_data["type2"],pokemon_data["ability1"],
+                          "male", PokemonNature.CALM, pokemon_data["egg_group1"],
+                          pokemon_data["height"], pokemon_data["weight"], 0, None,
+                          pokemon_data["base_hp"],
+                          pokemon_data["base_attack"],
+                          pokemon_data["base_defense"],
+                          pokemon_data["base_sp_attack"],
+                          pokemon_data["base_sp_defense"],
+                          pokemon_data["base_speed"],
+                          0, 0, 0, 0, 0, 0,
+                          0, 0, 0, 0, 0, 0,
+                          None, None, None, None,
+                          True, 0, 0, 0, 0, 0, 0, 0, 0,
+                          False, None, False)
+    else:
+        return -1
+
+    return pokemon
+
+
 # 어떻게 포켓몬 정보를 클래스에 넣을지 테스트 중입니다.
 if __name__ == "__main__":
-    print(pokemon_dict["Bulbasaur"]["English"])
-
-    bulbasaur = Pokemon(pokemon_dict["Bulbasaur"]["English"], pokemon_dict["Bulbasaur"]["pokedex"], 50,
-                        pokemon_dict["Bulbasaur"]["type1"], pokemon_dict["Bulbasaur"]["type2"],
-                        pokemon_dict["Bulbasaur"]["ability2"], "male", PokemonNature.CALM,
-                        pokemon_dict["Bulbasaur"]["egg_group1"], pokemon_dict["Bulbasaur"]["height"],
-                        pokemon_dict["Bulbasaur"]["weight"], 0, None,
-                        pokemon_dict["Bulbasaur"]["base_hp"],
-                        pokemon_dict["Bulbasaur"]["base_attack"],
-                        pokemon_dict["Bulbasaur"]["base_defense"],
-                        pokemon_dict["Bulbasaur"]["base_sp_attack"],
-                        pokemon_dict["Bulbasaur"]["base_sp_defense"],
-                        pokemon_dict["Bulbasaur"]["base_speed"],
-                        31, 31, 31, 31, 31, 31,
-                        252, 0, 0, 0, 252, 4,
-                        None, None, None, None,
-                        pokemon_dict["Bulbasaur"]["can_evolve"],
-                        0, 0, 0, 0, 0, 0, 0, 0, False, None, False)
+    bulbasaur = search_pokemon("Bulbasaur")
 
     print(bulbasaur.name)

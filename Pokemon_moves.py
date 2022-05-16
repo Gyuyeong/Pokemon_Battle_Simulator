@@ -3,19 +3,15 @@
 기술은 공격기와 보조기로 구별되며 공격기는 기술의 위력, 명중률, 타입, 부가효가, PP, 우선도, 물리/특수가 들어있으며,
 보조기는 기술의 명중률(없는것도 있습니다), 타입, 부가효과, 우선도가 들어있습니다.
 """
+import Pokemon_moves_data
 
 
 class PokemonMoves:
 
-    def __init__(self, category, move_type, pp, priority):
-        self._category = category
+    def __init__(self, move_type, pp, priority):
         self._move_type = move_type
         self._pp = pp
         self._priority = priority
-
-    @property
-    def category(self):
-        return self._category
 
     @property
     def move_type(self):
@@ -45,8 +41,8 @@ class PokemonAttackMoves(PokemonMoves):
     모든 기술이 위력이 있습니다. 명중률은 대부분의 기술들이 있으나 간혹 없는 경우 이는 필중기라는 뜻입니다.
     부가효과가 있는 기술들이 존재합니다.
     """
-    def __init__(self, category, move_type, pp, priority, power, accuracy, effect):
-        super().__init__(category, move_type, pp, priority)
+    def __init__(self, move_type, pp, priority, power, accuracy, effect):
+        super().__init__(move_type, pp, priority)
         self._power = power
         self._accuracy = accuracy
         self._effect = effect
@@ -72,8 +68,8 @@ class PokemonSupportMoves(PokemonMoves):
     명중률이 있을 수도 있고 없을 수도 있다는 것이 특징입니다.
     모든 기술들이 부가효과가 있습니다.
     """
-    def __init__(self, category, move_type, pp, priority, accuracy, effect):
-        super().__init__(category, move_type, pp, priority)
+    def __init__(self, move_type, pp, priority, accuracy, effect):
+        super().__init__(move_type, pp, priority)
         self._accuracy = accuracy
         self._effect = effect
 
@@ -84,3 +80,11 @@ class PokemonSupportMoves(PokemonMoves):
     @property
     def effect(self):
         return self._effect
+
+
+if __name__ == "__main__":
+    absorb = Pokemon_moves_data.movesDict["Absorb"]
+    print(absorb)
+    move = PokemonAttackMoves(absorb["Type"], absorb["PP"], absorb["Priority"], absorb["Power"], absorb["Accuracy"], absorb["Effect"])
+
+    print(move.effect)

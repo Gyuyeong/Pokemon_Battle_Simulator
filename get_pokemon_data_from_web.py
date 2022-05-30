@@ -18,7 +18,6 @@ from bs4 import BeautifulSoup as bs
 import re
 
 
-
 def set_chrome_driver():
     chrome_options = webdriver.ChromeOptions()
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
@@ -104,10 +103,13 @@ for alphabet in alphabet_list:
     for number in range(number_of_pokemons_by_alphabet):
         # 개별 포켓몬의 정보를 저장할 dictionary 만들기
         pokemon = dict()
-        element_present = EC.presence_of_element_located((By.XPATH, '//*[@id="mw-content-text"]/div/table[{}]/tbody/tr[{}]/td[2]/a'.format(num + 1, number + 2)))
+        element_present = EC.presence_of_element_located(
+            (By.XPATH, '//*[@id="mw-content-text"]/div/table[{}]/tbody/tr[{}]/td[2]/a'.format(num + 1, number + 2)))
         # WebDriverWait(driver, timeout).until(element_present)
         # 목록에서 찾고 클릭
-        element = driver.find_element(By.XPATH, '//*[@id="mw-content-text"]/div/table[{}]/tbody/tr[{}]/td[2]/a'.format(num + 1, number + 2))
+        element = driver.find_element(By.XPATH,
+                                      '//*[@id="mw-content-text"]/div/table[{}]/tbody/tr[{}]/td[2]/a'.format(num + 1,
+                                                                                                             number + 2))
         element.click()
 
         # 개별 포켓몬 사이트호 이동함.
@@ -115,23 +117,28 @@ for alphabet in alphabet_list:
         soup = bs(page_html, 'html.parser')
 
         # 이름, 도감번호, 타입, 교배그룹, 키, 몸무게가 들어있는 테이블이다.
-        information_table = soup.findAll("table", style=re.compile(r'float:right; text-align:center; width:33%; max-width:420px;.*?padding:2px;'))[0]
+        information_table = soup.findAll("table", style=re.compile(
+            r'float:right; text-align:center; width:33%; max-width:420px;.*?padding:2px;'))[0]
         # 종족값이 들어있는 테이블
-        stats_table = soup.findAll("table", style=re.compile(r'.*?border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;; border:.*?white-space:nowrap'))
-        # 2개 이상 있는 경우는 메가진화와 같이 종족값에 변화가 생기는 경우이다.
-        print(len(stats_table))
+        stats_table = soup.findAll("table", style=re.compile(
+            r'.*?border-radius: 10px; -moz-border-radius: 10px; -webkit-border-radius: 10px; -khtml-border-radius: 10px; -icab-border-radius: 10px; -o-border-radius: 10px;; border:.*?white-space:nowrap'))[0]
         # 한글 이름이 들어있는 테이블
-        name_table = soup.findAll("table", {"class": "roundy"}, style=re.compile(r'background:.*?; border: 3px solid.*?; float:left'))[0]
-        
+        name_table = soup.findAll("table", {"class": "roundy"},
+                                  style=re.compile(r'background:.*?; border: 3px solid.*?; float:left'))[0]
+
         # 포켓몬 정보를 추출해내는 과정:
         # 포켓몬 이름
-        name = information_table.find("td", {"width": "75%", "class": "roundy", "style": "background:#FFF;"}).find("b").string
+        name = information_table.find("td", {"width": "75%", "class": "roundy", "style": "background:#FFF;"}).find(
+            "b").string
         # 도감 번호
-        pokedex_number = int(information_table.find("th", {"width": "25%", "class": "roundy", "style": "background:#FFF;"}).find("span").string[1:])
+        pokedex_number = int(
+            information_table.find("th", {"width": "25%", "class": "roundy", "style": "background:#FFF;"}).find(
+                "span").string[1:])
         # 타입을 담을 리스트
         pokemon_types = list()
         # 타입을 추출해내는 과정
-        for table in information_table.findAll("td", {"class": "roundy", "colspan": "2"}, style=re.compile(r'background:.*?; padding:2px;')):
+        for table in information_table.findAll("td", {"class": "roundy"},
+                                               style=re.compile(r'background:.*?; padding:2px;')):
             # Type이 들어있는 테이블인지 확인
             if table.find("a").find("span").string == "Type":
                 # Display: None인 td들을 거르는 작업
@@ -141,72 +148,86 @@ for alphabet in alphabet_list:
                 if len(types) == 1:
                     pokemon_types.append(types[0].string)
                     pokemon_types.append("None")
-                # 타입이 세개 이상 적혀있는 경우가 있음. 이점을 처리해야 함. (자시안처럼 따로 적혀있는 경우)
+                # 타입이 세개 이상 적혀있는 경우가 있음. 이 점을 처리해야 함. (자시안처럼 따로 적혀있는 경우)
+                else:
+                    for t in types:
+                        pokemon_types.append(t.string)
+            # 메가진화 등으로 인해 타입이 두가지 방식으로 나타나는 경우
+            elif table.find("a").find("span").string == "Types":
+                # Display: None인 td들을 거르는 작업
+                type_td = table.findAll(lambda tag: tag.name == "td" and not tag.attrs)[0]
+                types = type_td.findAll("b")
+                # 단일 타입의 경우
+                if len(types) == 1:
+                    pokemon_types.append(types[0].string)
+                    pokemon_types.append("None")
+                    # 타입이 세개 이상 적혀있는 경우가 있음. 이 점을 처리해야 함. (자시안처럼 따로 적혀있는 경우)
                 else:
                     for t in types:
                         pokemon_types.append(t.string)
 
-        # 특성 추출과정
-        tds = information_table.findAll("td", {"class": "roundy", "colspan": "2"})
+        # 특성을 담을 리스트
+        abilities = list()
+
+        # 키 데이터를 담을 리스트
+        heights = list()
+
+        # 몸무게 데이터를 담을 리스트
+        weights = list()
+        
+        tds = information_table.findAll("td", {"class": "roundy"})
         for td in tds:
             try:
-                if td.find("a").find("span").string == "Abilities":
+                # 특성 추출과정
+                if td.find("a").find("span").string == "Abilities":  # 특성이 여러개 있는 경우
+                    # display: none 이 있는 것들을 골라내야 함.
                     ability_tds = td.findAll(lambda tag: tag.has_attr("width") and not tag.has_attr("style"))
                     for ability_td in ability_tds:
-                        print(ability_td)
+                        # 특성 추출
+                        ability = ability_td.findAll("span")
+                        for a in ability:
+                            abilities.append(a.string)
+                elif td.find("a").find("span").string == "Ability":  # 특성이 하나밖에 없는 경우
+                    # 첫 td를 골라냄
+                    abilities.append(td.find("td").find("span").string)
+
             except:
                 pass
-            # print(td)
-            # print("=========================================")
 
-        # # 교배그룹 추출과정
-        # tds = information_table.findAll("td", {"width": "50%"})
-        # for td in tds:
-        #     print(td)
+            try:
+                # 키 데이터 추출과정
+                if td.find("a").find("span").string == "Height":
+                    height_tds = td.findAll("tr")[0].findAll("td")
+                    for height_td in height_tds:
+                        heights.append(height_td.string)
 
-        # print(soup.findAll("td"))
-        # for td in soup.findAll("td"):
-        #     if ("colspan" in td.attrs) and (td.attrs["colspan"] == "2"):
-        #         print(td)
-        #         print("===================================================")
-        # print(soup)
+                elif td.find("a").find("span").string == "Weight":
+                    weight_tds = td.findAll("tr")[0].findAll("td")
+                    for weight_td in weight_tds:
+                        weights.append(weight_td.string)
+            except:
+                pass
 
-        # # 이름, 도감번호, 타입 등이 있는 중요한 테이블이다.
-        # main_tbody = soup.findAll("table")[4].findAll("tbody")[0]  # 리스트로 나와서 빼줌.
-        # # for tr in main_tbody.findAll("tr"):
-        # #     print(tr)
-        # #     print("==========================================")
-        # # 영문 이름
-        # name = main_tbody.findAll("tr")[2].find("td").find("b").string
-        # # 포켓몬 타입 추출
-        # pokemon_types = list()
-        # for pokemon_type in main_tbody.findAll("tr")[10].findAll("b"):
-        #     pokemon_types.append(pokemon_type.string)
-        #
-        # # 교배 그룹
-        # pokemon_egg_groups = list()
-        # for egg_group in main_tbody.findAll("tr")[25].findAll("span"):
-        #     pokemon_egg_groups.append(egg_group.string)
+        # 스텟을 담을 리스트. 순서대로 hp, attack, defense, sp_atk, sp_def, speed
+        stats = list()
 
-        # # 키
-        # height = main_tbody.findAll("tr")[28].findAll("td")[1].string
-        #
-        # print(main_tbody.findAll("tr")[35])
+        stats_data = stats_table.findAll("tr", style=re.compile(r'background: #.*?; text-align:center'))
+        for data in stats_data:
+            stats.append(int(data.find("div", style="float:right").string))
 
-        # main_tbody.findAll[10] # 타입이 들어있음.
-        # main_tbody.findAll[17] # 특성 들어있음.
-        # main_tbody.findAll[25] # 교배 그룹 들어있음.
-        # main_tbody.findAll[27] # 키 몸무게 들어있음.
-
-
+        print(name)
+        print(pokedex_number)
+        print(pokemon_types)
+        print(abilities)
+        print(stats)
+        print(heights)
+        print(weights)
 
         driver.back()
         WebDriverWait(driver, timeout).until(element_present)
-        break
+        # break
     num += 1
-    break
-
-
+    # break
 
 # A
 '//*[@id="mw-content-text"]/div/table[1]/tbody/tr[2]/td[2]/a'
